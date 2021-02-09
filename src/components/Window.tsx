@@ -1,12 +1,23 @@
-import React, { useState, useRef, useContext, useLayoutEffect } from 'react'
+import React, { useState, useRef, useContext, useLayoutEffect, useEffect } from 'react'
 import { MouseContext } from '../util/contexts'
+
+import closeIcon from '../icons/close.svg'
+import minimizeIcon from '../icons/minimize.svg'
 import './Window.css'
 
 export interface WindowProps {
+  title: string
+  icon: string
+  minimized: boolean
   width?: string
   height?: string
+  x?: number
+  y?: number
   zIndex: number
   focus?: () => void
+  minimize?: () => void
+  close?: () => void
+  updateParentProperties?: (props: any) => void
 }
 
 // How close we have to be in pixels to the window edge before we activate whichever function
@@ -16,7 +27,20 @@ const BORDER_MARGIN = 5
  * A draggable, resizable window that allows for focusing...
  */
 const Window: React.FC<WindowProps> = (props) => {
-  const { width, height, zIndex, focus } = props
+  const { 
+    title, 
+    icon, 
+    minimized, 
+    width, 
+    height, 
+    x,
+    y,
+    zIndex, 
+    focus, 
+    minimize, 
+    close,
+    updateParentProperties,
+  } = props
 
   // Using the ref makes a app refresh smoother as oppose to updating the styling using the state
   const window = useRef<HTMLDivElement>(null)
@@ -26,7 +50,10 @@ const Window: React.FC<WindowProps> = (props) => {
 
   // All the draging state information we need
   const [dragging, setDragging] = useState<boolean>(false)
-  const [mouseBoxPosition, setMouseBoxPosition] = useState<[number, number]>([0, 0]) // Where the cursor clicks on the header
+  const [mouseBoxPosition, setMouseBoxPosition] = useState<[number, number]>([
+    0,
+    0,
+  ]) // Where the cursor clicks on the header
 
   // All the resizing state information we need
   const [resizing, setResizing] = useState<boolean>(false)
@@ -36,8 +63,20 @@ const Window: React.FC<WindowProps> = (props) => {
   const [windowStyling, setWindowStyling] = useState({
     width: (width ?? '0') + 'px',
     height: (height ?? '0') + 'px',
+    left: (x ?? 0) + 'px',
+    top: (y ?? 0) + 'px',
     cursor: 'auto',
   })
+
+  // This fixes a strange bug that whenever you remove a window it resets to another window. (remove this to test and understand)
+  useLayoutEffect(() => {
+    if (window.current) {
+      window.current.style.left = x ? x + 'px' : window.current.style.left
+      window.current.style.top = y ? y + 'px' : window.current.style.top
+      window.current.style.width = width ? width + "px" : window.current.style.width 
+      window.current.style.height = height ? height + "px" : window.current.style.height 
+    }
+  }, [x, y, width, height])
 
   /*
     Dragging
@@ -54,13 +93,20 @@ const Window: React.FC<WindowProps> = (props) => {
     }
   }
 
-  // Stop dragging when the mouse lets up
+  // Stop dragging when the mouse lets up and update the parent
   const handleHeaderMouseUp = (): void => {
     setDragging(false)
+    if (updateParentProperties && window.current) {
+      const {left, top} = window.current?.getBoundingClientRect();
+      updateParentProperties({
+        left,
+        top
+      })
+    }
   }
 
   // Move the box to the given cordinates (such cordinates are typically the mouse)
-  const moveWindowToMouse = (x: number, y: number): void => {
+  const moveWindowToPosition = (x: number, y: number): void => {
     if (window.current) {
       // We want to move the box relative to where we clicked it (keep the cursor in the same spot on the box)
       const [mouseBoxX, mouseBoxY] = mouseBoxPosition
@@ -75,7 +121,7 @@ const Window: React.FC<WindowProps> = (props) => {
   // We're also using "LayoutEffect" for better visual performance
   useLayoutEffect(() => {
     if (dragging) {
-      moveWindowToMouse(mouseX, mouseY)
+      moveWindowToPosition(mouseX, mouseY)
       return
     }
     // eslint-disable-next-line
@@ -209,20 +255,48 @@ const Window: React.FC<WindowProps> = (props) => {
     <div
       className="Window"
       ref={window}
-      style={{ ...windowStyling, zIndex }}  // Include the zIndex with the styling
+      style={{ ...windowStyling, zIndex, display: minimized ? "none" : "block" }} // Include the zIndex with the styling
       onMouseDown={() => {
         if (focus) {
           focus() // When we click on the box, we want to focus on it.
         }
         setResizing(!!edge) // also start resizing if we're near an edge
       }}
-      onMouseUp={() => setResizing(false)}  // stop resizing when we're done
+      onMouseUp={() => {
+        setResizing(false)  // stop resizing when we're done
+
+        // update the parent properties when finished
+        if (updateParentProperties && window.current) {
+          const { width, height } = window.current?.getBoundingClientRect();
+          updateParentProperties({
+            width,
+            height
+          })
+        }
+      }} 
     >
       <div
         className="WindowHeader"
         onMouseDown={handleHeaderMouseDown}
         onMouseUp={handleHeaderMouseUp}
-      ></div>
+      >
+        <img src={icon} className="windowIcon" alt="application icon" />
+        <span className="window-title">{title}</span>
+        <div className="op-icons">
+          <img
+            className="minimizeIcon"
+            alt="minimize window"
+            src={minimizeIcon}
+            onClick={minimize}
+          />
+          <img
+            className="closeIcon"
+            alt="close window"
+            src={closeIcon}
+            onClick={close}
+          />
+        </div>
+      </div>
     </div>
   )
 }

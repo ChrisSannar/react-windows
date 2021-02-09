@@ -7,5 +7,23 @@
 .WindowHeader {
   cursor: move;
   height: 1em;
+  padding: 0.1em;
   background: #3e3e3e;
+  display: flex;
+  justify-content: space-between;
+}
+
+.window-title {
+  color: #eee;
+  font-size: 12px;
+}
+
+.op-icons {
+  display: flex;
+}
+
+.closeIcon, .minimizeIcon {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
 }
