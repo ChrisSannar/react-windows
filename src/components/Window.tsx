@@ -5,12 +5,18 @@ import './Window.css'
 export interface WindowProps {
   width?: string
   height?: string
+  zIndex: number
+  focus?: () => void
 }
 
-const BORDER_MARGIN = 5 // How close we have to be in pixels to the window edge before we activate whichever function
+// How close we have to be in pixels to the window edge before we activate whichever function
+const BORDER_MARGIN = 5
 
+/**
+ * A draggable, resizable window that allows for focusing...
+ */
 const Window: React.FC<WindowProps> = (props) => {
-  const { width, height } = props
+  const { width, height, zIndex, focus } = props
 
   // Using the ref makes a app refresh smoother as oppose to updating the styling using the state
   const window = useRef<HTMLDivElement>(null)
@@ -19,12 +25,12 @@ const Window: React.FC<WindowProps> = (props) => {
   const [mouseX, mouseY] = useContext(MouseContext)
 
   // All the draging state information we need
-  const [dragging, setDragging] = useState(false)
-  const [mouseBoxPosition, setMouseBoxPosition] = useState([0, 0]) // Where the cursor clicks on the header
+  const [dragging, setDragging] = useState<boolean>(false)
+  const [mouseBoxPosition, setMouseBoxPosition] = useState<[number, number]>([0, 0]) // Where the cursor clicks on the header
 
   // All the resizing state information we need
-  const [resizing, setResizing] = useState(false)
-  const [edge, setEdge] = useState('')
+  const [resizing, setResizing] = useState<boolean>(false)
+  const [edge, setEdge] = useState<string>('')
 
   // The default styling for the window
   const [windowStyling, setWindowStyling] = useState({
@@ -203,9 +209,14 @@ const Window: React.FC<WindowProps> = (props) => {
     <div
       className="Window"
       ref={window}
-      style={{ ...windowStyling }}
-      onMouseDown={() => setResizing(!!edge)}
-      onMouseUp={() => setResizing(false)}
+      style={{ ...windowStyling, zIndex }}  // Include the zIndex with the styling
+      onMouseDown={() => {
+        if (focus) {
+          focus() // When we click on the box, we want to focus on it.
+        }
+        setResizing(!!edge) // also start resizing if we're near an edge
+      }}
+      onMouseUp={() => setResizing(false)}  // stop resizing when we're done
     >
       <div
         className="WindowHeader"
