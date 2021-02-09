@@ -1,9 +1,9 @@
-import React, { useState, useRef, useContext, useLayoutEffect, useEffect } from 'react'
-import { MouseContext } from '../util/contexts'
+import React, { useState, useRef, useContext, useLayoutEffect } from 'react'
+import { MouseContext } from '../../util/contexts'
 
-import closeIcon from '../icons/close.svg'
-import minimizeIcon from '../icons/minimize.svg'
-import './Window.css'
+import closeIcon from '../../icons/close.svg'
+import minimizeIcon from '../../icons/minimize.svg'
+import './style.css'
 
 export interface WindowProps {
   title: string
@@ -267,10 +267,11 @@ const Window: React.FC<WindowProps> = (props) => {
 
         // update the parent properties when finished
         if (updateParentProperties && window.current) {
-          const { width, height } = window.current?.getBoundingClientRect();
+          const { width, height, left } = window.current?.getBoundingClientRect();
           updateParentProperties({
             width,
-            height
+            height,
+            left,
           })
         }
       }} 
