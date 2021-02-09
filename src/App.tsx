@@ -109,7 +109,11 @@ function App() {
             />
           )
         })}
-        <Bar windows={windows} newWindow={addNewWindow}/>
+        <Bar 
+          windows={windows} 
+          newWindow={addNewWindow}
+          minimizeWindow={(index: number) => minimizeWindow(index)}
+          closeWindow={(index: number) => removeWindow(index)}/>
       </div>
     </MouseContext.Provider>
   )

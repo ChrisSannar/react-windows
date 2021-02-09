@@ -11,10 +11,29 @@
   margin: 0 0.2em;
 }
 
-.Bar .windows {
+.Bar .window-list {
   display: flex;
+}
+
+.Bar .window-item {
+  display: flex;
+  align-items: baseline;
+  cursor: pointer;
+  padding: 0.1em 0.3em;
+  border: 1px solid #eeeeee;
+}
+
+.Bar .window-item * {
+  display: flex;
+  align-items: baseline;
 }
 
 .Bar button {
   cursor: pointer;
+}
+
+.Bar .windowIcon, .Bar .closeIcon {
+  cursor: pointer;
+  height: 1em;
+  width: 1em;
 }
