@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './App.css'
 import Window, { WindowProps } from './components/Window/index'
-import TaskBar from './components/TaskBar/index'
+import Bar from './components/Bar/index'
 import { MouseContext } from './util/contexts'
 
 import cube from './icons/cube.svg'
@@ -69,8 +69,8 @@ function App() {
     setWindows(newWindows)
   }
 
-  // Closes a window (aka, removes it from the array)
-  const closeWindow = (index: number): void => {
+  // Removes a window
+  const removeWindow = (index: number): void => {
     const newWindows = [...windows]
     newWindows.splice(index, 1)
     setWindows(newWindows)
@@ -86,6 +86,11 @@ function App() {
     setWindows(newWindows)
   }
 
+  // Adds a new window to the set of windows
+  const addNewWindow = (newWindow: WindowProps) => {
+    setWindows([...windows, newWindow])
+  }
+
   return (
     <MouseContext.Provider value={mousePosition}>
       <div
@@ -99,14 +104,12 @@ function App() {
               {...window}
               focus={() => setWindowOrder(index)}
               minimize={() => minimizeWindow(index)}
-              close={() => closeWindow(index)}
+              close={() => removeWindow(index)}
               updateParentProperties={(props: any) => updateProps(index, props)}
             />
           )
         })}
-
-        <div>{windows.map((window: WindowProps) => window.title)}</div>
-        <TaskBar />
+        <Bar windows={windows} newWindow={addNewWindow}/>
       </div>
     </MouseContext.Provider>
   )
