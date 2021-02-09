@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react'
+import React, { useState, useRef, useContext, useLayoutEffect } from 'react'
 import { MouseContext } from '../util/contexts'
 import './Window.css'
 
@@ -29,7 +29,6 @@ const Window: React.FC<WindowProps> = (props) => {
   /*
     Dragging
   */
-
   // When we click on the header, start dragging it
   const handleHeaderMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
     if (window.current) {
@@ -46,17 +45,8 @@ const Window: React.FC<WindowProps> = (props) => {
     setDragging(false)
   }
 
-  // When we are out of bounds of the box move the box to it (unless we're done dragging)
-  const handleHeaderMouseOut = (): void => {
-    if (dragging) {
-      moveBoxToMouse(mouseX, mouseY)
-    } else {
-      setDragging(false)
-    }
-  }
-
   // Move the box to the given cordinates (such cordinates are typically the mouse)
-  const moveBoxToMouse = (x: number, y: number): void => {
+  const moveWindowToMouse = (x: number, y: number): void => {
     if (window.current) {
 
       // We want to move the box relative to where we clicked it (keep the cursor in the same spot on the box)
@@ -68,6 +58,16 @@ const Window: React.FC<WindowProps> = (props) => {
     }
   }
 
+  // If we're in the "dragging" state, then move the box to the cursor.
+  // We're also using "LayoutEffect" for better visual performance
+  useLayoutEffect(() => {
+    if (dragging) {
+      moveWindowToMouse(mouseX, mouseY)
+      return
+    }
+  // eslint-disable-next-line
+  }, [mouseX, mouseY])
+
   return <div 
     className="Window"
     ref={window}
@@ -76,8 +76,7 @@ const Window: React.FC<WindowProps> = (props) => {
       <div 
       className="WindowHeader"
       onMouseDown={handleHeaderMouseDown}
-      onMouseUp={handleHeaderMouseUp}
-      onMouseOut={handleHeaderMouseOut}></div>
+      onMouseUp={handleHeaderMouseUp}></div>
   </div>
 }
 
