@@ -277,21 +277,21 @@ const Window: React.FC<WindowProps> = (props) => {
       }} 
     >
       <div
-        className="WindowHeader"
+        className="WindowHeader noselect"
         onMouseDown={handleHeaderMouseDown}
         onMouseUp={handleHeaderMouseUp}
       >
-        <img src={icon} className="windowIcon" alt="application icon" />
+        <img src={icon} className="window-icon" alt="application icon" />
         <span className="window-title">{title}</span>
         <div className="op-icons">
           <img
-            className="minimizeIcon"
+            className="minimize-icon"
             alt="minimize window"
             src={minimizeIcon}
             onClick={minimize}
           />
           <img
-            className="closeIcon"
+            className="close-icon"
             alt="close window"
             src={closeIcon}
             onClick={close}

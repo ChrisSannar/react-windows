@@ -7,8 +7,12 @@
   z-index: 999999;
 }
 
-.Bar * {
+.Bar > * {
   margin: 0 0.2em;
+}
+
+.Bar button {
+  background: #3e3e3e;
 }
 
 .Bar .window-list {
@@ -20,20 +24,27 @@
   align-items: baseline;
   cursor: pointer;
   padding: 0.1em 0.3em;
+  margin-right: 0.3em;
   border: 1px solid #eeeeee;
 }
 
 .Bar .window-item * {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  max-height: 1.2em;
+  padding-right: 0.2em;
 }
 
 .Bar button {
   cursor: pointer;
 }
 
-.Bar .windowIcon, .Bar .closeIcon {
+.Bar .window-icon, .Bar .close-icon {
   cursor: pointer;
   height: 1em;
   width: 1em;
+}
+
+.Bar .window-title {
+  line-height: 1.2;
 }
