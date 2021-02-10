@@ -3,6 +3,8 @@ import './style.css'
 
 import { MouseContext } from '../../util/contexts'
 import { WindowProps } from '../Window/index'
+import Clicker from '../Clicker/index'
+import Input from '../Input/index'
 
 import closeIcon from '../../icons/close.svg'
 import cubeIcon from '../../icons/cube.svg'
@@ -17,26 +19,30 @@ export interface BarProps {
 }
 
 // These next two are to represent new Apps to add to the page
+// ***
 const App1: WindowProps = {
   title: 'App1',
   icon: cubeIcon,
+  minimized: false,
+  ChildComponent: Clicker,
   width: '200',
   height: '150',
   x: 200,
   y: 100,
   zIndex: 0,
-  minimized: false,
 }
 const App2: WindowProps = {
   title: 'App2',
   icon: docIcon,
+  minimized: false,
+  ChildComponent: Input,
   width: '200',
   height: '150',
-  x: 200,
-  y: 100,
+  x: 250,
+  y: 150,
   zIndex: 0,
-  minimized: false,
 }
+// ***
 
 const Bar: React.FC<BarProps> = (props) => {
   // The index of the window item we're rearranging
@@ -196,9 +202,7 @@ const Bar: React.FC<BarProps> = (props) => {
             ) => handleWindowItemMouseDown(index, event)}
             onMouseUp={() => moveWindowItemToPosition(index)}
           >
-            <div
-            // onClick={() => props.minimizeWindow(index)}
-            >
+            <div className="window-item-body">
               <img
                 src={window.icon}
                 className="window-icon"
