@@ -23,6 +23,10 @@ export interface WindowProps {
 // How close we have to be in pixels to the window edge before we activate whichever function
 const BORDER_MARGIN = 5
 
+// The Smallest box we're allowed to have
+const MIN_WIDTH = 100;
+const MIN_HEIGHT = 70;
+
 /**
  * A draggable, resizable window that allows for focusing...
  */
@@ -202,32 +206,42 @@ const Window: React.FC<WindowProps> = (props) => {
         right,
       } = window.current.getBoundingClientRect()
 
-      // What edge are we resizing?
-      switch (edge) {
-        case 'bottom':
-          // Set the new height to itself minus the new difference (plus 1 to keep up the cursor)
-          window.current.style.height = height - (bottom - y) + 1 + 'px'
-          break
-        case 'right':
-          // Same idea here
-          window.current.style.width = width - (right - x) + 1 + 'px'
-          break
-        case 'bottomright':
-          // Run both values in the case of a corner
-          window.current.style.height = height - (bottom - y) + 1 + 'px'
-          window.current.style.width = width - (right - x) + 1 + 'px'
-          break
-        case 'left':
-          // With the left, we have to shift it over as well
-          window.current.style.width = width + (left - x) + 'px'
-          window.current.style.left = x + 'px'
-          break
-        case 'bottomleft':
-          window.current.style.height = height - (bottom - y) + 1 + 'px'
-          window.current.style.width = width + (left - x) + 'px'
-          window.current.style.left = x + 'px'
-          break
+      // Our height and width constraints
+      if (width < MIN_WIDTH) {
+        window.current.style.width = (width + 1) + 'px';
+        window.current.style.left = (left - ( edge.includes("left") ? 1 : 0)) + 'px'
+      } else if (height < MIN_HEIGHT) {
+        window.current.style.height = (height + 1) + 'px';
+      } else {
+
+        // What edge are we resizing?
+        switch (edge) {
+          case 'bottom':
+            // Set the new height to itself minus the new difference (plus 1 to keep up the cursor)
+            window.current.style.height = height - (bottom - y) + 1 + 'px'
+            break
+          case 'right':
+            // Same idea here
+            window.current.style.width = width - (right - x) + 1 + 'px'
+            break
+          case 'bottomright':
+            // Run both values in the case of a corner
+            window.current.style.height = height - (bottom - y) + 1 + 'px'
+            window.current.style.width = width - (right - x) + 1 + 'px'
+            break
+          case 'left':
+            // With the left, we have to shift it over as well
+            window.current.style.width = width + (left - x) + 'px'
+            window.current.style.left = x + 'px'
+            break
+          case 'bottomleft':
+            window.current.style.height = height - (bottom - y) + 1 + 'px'
+            window.current.style.width = width + (left - x) + 'px'
+            window.current.style.left = x + 'px'
+            break
+        }
       }
+
     }
   }
 
