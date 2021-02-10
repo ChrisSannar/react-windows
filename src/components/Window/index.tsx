@@ -10,6 +10,7 @@ export interface WindowProps {
   title: string
   icon: string
   minimized: boolean
+  ChildComponent?: any  // Yeah... this can't be right, but hey it works and makes typescript happy
   width?: string
   height?: string
   x?: number
@@ -29,6 +30,7 @@ const Window: React.FC<WindowProps> = (props) => {
     title,
     icon,
     minimized,
+    ChildComponent,
     width,
     height,
     x,
@@ -227,6 +229,9 @@ const Window: React.FC<WindowProps> = (props) => {
             onClick={close}
           />
         </div>
+      </div>
+      <div className="window-body">
+        {<ChildComponent style={{ maxHeight: windowStyling.height + "px"}} /> ?? ""}
       </div>
     </div>
   )

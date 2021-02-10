@@ -27,3 +27,7 @@
   height: 15px;
   width: 15px;
 }
+
+.Window .window-body {
+  overflow: hidden;
+}

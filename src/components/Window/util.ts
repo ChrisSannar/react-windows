@@ -4,8 +4,8 @@ import React from 'react'
 const BORDER_MARGIN = 7
 
 // The Smallest window we're allowed to have
-const MIN_WIDTH = 100;
-const MIN_HEIGHT = 70;
+const MIN_WIDTH = 180;
+const MIN_HEIGHT = 130;
 
 /*
   Dragging
@@ -28,6 +28,9 @@ const moveWindowToPosition = (
   }
 }
 
+/*
+  Resizing
+*/
 // Lets us know if the x/y coordinates are within the borderMargin of the window edge
 const nearWindow = (
     window: React.RefObject<HTMLDivElement>, 
