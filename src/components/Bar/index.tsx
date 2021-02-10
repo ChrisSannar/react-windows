@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect, useLayoutEffect, useRef} from 'react'
+import React, {useState, useContext, useLayoutEffect, useRef} from 'react'
 import './style.css'
 
 import { MouseContext } from '../../util/contexts'
@@ -12,7 +12,8 @@ export interface BarProps {
   windows: WindowProps[]
   newWindow: (window: WindowProps) => void
   minimizeWindow: (index: number) => void
-  closeWindow: (index: number) => void
+  closeWindow: (index: number) => void,
+  moveWindowToIndex: (index: number, newIndex: number) => void
 }
 
 // These next two are to represent new Apps to add to the page
@@ -38,18 +39,26 @@ const App2: WindowProps = {
 }
 
 const Bar: React.FC<BarProps> = (props) => {
+
+  // The index of the window item we're rearranging
   const [rearrangingWindowIndex, setRearrangingWindowIndex] = useState<number>(-1)
+  
+  // Styles for each window item
   const [windowItemStyles, setWindowItemStyles] = useState<React.CSSProperties[]>([])
+  
+  // When we click on the window item, where our mouse is in relation to that window item
   const [windowItemMousePositions, setWindowItemMousePositions] = useState<number[]>([])
+  
+  // Mouse and refs
   const [mouseX] = useContext(MouseContext)
   const windowItems = useRef<HTMLDivElement[] | null[]>([])
   const hr = useRef<HTMLHRElement | null>(null)
 
+  // When we start up, load the styling and refs for each window item
   useLayoutEffect(() => {
     const newWindowStyles: React.CSSProperties[] = []
     props.windows.forEach(() => {
       newWindowStyles.push({
-        // position: "relative",
         left: "0px"
       });
     });
@@ -57,8 +66,8 @@ const Bar: React.FC<BarProps> = (props) => {
     setWindowItemStyles(newWindowStyles)
   }, [props.windows])
 
-  // Move the 
-  const slideWindowItemToX = (windowItemIndex: number, x: number) => {
+  // Slide the window at the given index to the x coordinate
+  const slideWindowItemToX = (windowItemIndex: number, x: number): void => {
     const newWindowItemStyles = [ ...windowItemStyles ].map(items => ({ ...items }))  // This map thing because typescript is difficult sometimes (read-only)
 
     // Get the current item boundaries
@@ -77,17 +86,16 @@ const Bar: React.FC<BarProps> = (props) => {
     setWindowItemStyles(newWindowItemStyles)
   }
 
+  // Slide the window around when we're in the "arranging" state
   useLayoutEffect(() => {
     if (rearrangingWindowIndex >= 0) {
       slideWindowItemToX(rearrangingWindowIndex, mouseX)
     }
+      // eslint-disable-next-line
   }, [mouseX])
 
-  // useEffect(() => {
-  //   console.log("INDEX", rearrangingWindowIndex, windowItemStyles)
-  // }, [rearrangingWindowIndex, windowItemStyles])
-
-  const handleWindowItemMouseDown = (index: number, event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  // When we click to slide one of the items...
+  const handleWindowItemMouseDown = (index: number, event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
     
     // First, what window item are we arranging?
     setRearrangingWindowIndex(index)
@@ -103,12 +111,37 @@ const Bar: React.FC<BarProps> = (props) => {
     setWindowItemMousePositions(newWindowItemMousePositions)
   }
 
-  const moveWindowItemToPosition = (index: number, x: number) => {
-    const newWindowItemStyles = [ ...windowItemStyles ].map(items => ({ ...items }))
+  // Move the Window at the given index to whatever it's closest resting position is
+  const moveWindowItemToPosition = (index: number): void => {
+
+    // Establish that we aren't sliding around anymore
+    const newWindowItemStyles: React.CSSProperties[] = [ ...windowItemStyles ].map(items => ({ ...items }))
     newWindowItemStyles[index].position = "relative"
     newWindowItemStyles[index].left = "0px"
     setWindowItemStyles(newWindowItemStyles)
     setRearrangingWindowIndex(-1)
+
+    // Set up our default index and left bound for our current item.
+    let newIndex: number = windowItems.current.length - 1;
+    const ourItemLeft: number = windowItems.current[index]?.getBoundingClientRect().left ?? 0;
+    if (ourItemLeft) {
+
+      // Loop the elements backwards and see which item we're closest to
+      for (let i: number = windowItems.current.length - 1; i >= 0; i--) {
+        if (i !== index) {
+
+          // set our index to the left most item we're past
+          const currentItemLeft: number = windowItems.current[i]?.getBoundingClientRect().left ?? 0;
+          if (currentItemLeft && currentItemLeft < ourItemLeft) {
+            break;
+          }
+          newIndex = i;
+        }
+      }
+    }
+
+    // Once we have our index, then rearrange the windows
+    props.moveWindowToIndex(index, newIndex)
   }
 
   return (
@@ -131,7 +164,7 @@ const Bar: React.FC<BarProps> = (props) => {
               windowItems.current[index] = el
             }}
             onMouseDown={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => handleWindowItemMouseDown(index, event)}
-            onMouseUp={() => moveWindowItemToPosition(index, mouseX)}
+            onMouseUp={() => moveWindowItemToPosition(index)}
             >
             <div onClick={() => {
                 props.minimizeWindow(index)

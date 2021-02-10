@@ -51,6 +51,14 @@ function App() {
     setWindowOrder(windows.length, [...windows, newWindow])
   }
 
+  // Moves the given index of a window to a new index
+  const moveWindowToIndex = (index: number, newIndex: number) => {
+    const newWindows = [...windows];
+    const movingWindow = newWindows.splice(index, 1)[0];
+    newWindows.splice(newIndex, 0, movingWindow);
+    setWindows(newWindows);
+  }
+
   return (
     <MouseContext.Provider value={mousePosition}>
       <div
@@ -76,7 +84,8 @@ function App() {
             setWindowOrder(index, windows)
             minimizeWindow(index)
           }}
-          closeWindow={(index: number) => removeWindow(index)}/>
+          closeWindow={(index: number) => removeWindow(index)}
+          moveWindowToIndex={moveWindowToIndex}/>
       </div>
     </MouseContext.Provider>
   )
