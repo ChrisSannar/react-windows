@@ -13,16 +13,16 @@
   justify-content: space-between;
 }
 
-.window-title {
+.Window .window-title {
   color: #eee;
   font-size: 12px;
 }
 
-.op-icons {
+.Window .op-icons {
   display: flex;
 }
 
-.closeIcon, .minimizeIcon {
+.Window .close-icon, .Window .minimize-icon {
   cursor: pointer;
   height: 15px;
   width: 15px;
