@@ -11,8 +11,6 @@ function App() {
 
   // Re Order the zIndex of the window props
   const setWindowOrder = (index: number, newWindows: WindowProps[]): void => {
-    // console.log("WIN", windows)
-    // const newWindows = [...windows]
 
     // Find the highest zIndex
     let highestZIndex: number = 0
