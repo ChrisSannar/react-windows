@@ -4,7 +4,11 @@ import React, {useState} from 'react'
 const Input: React.FC = () => {
   const [text, setText] = useState("")
 
-  return <div>
+  return <div
+    style={{
+      margin: "0.5em"
+    }}
+  >
     <input placeholder="Add your input here" onChange={(e) => setText(e.target.value)} />
     <p>{text}</p>
   </div>
