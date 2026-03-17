@@ -65,6 +65,19 @@ function App() {
         className="App"
         onMouseMove={(e) => setMousePosition([e.clientX, e.clientY])}
       >
+        <div className="directions">
+          <h1>Welcome to React Windows!</h1>
+          <p>A window manager for simiulated applications</p>
+          <p>Click on one of the icons below to open a new app</p>
+          <p>Each window...</p>
+          <ul>
+            <li>Is draggable (by it's header)</li>
+            <li>Can be resized</li>
+            <li>Closeable/Minimizable</li>
+            <li>Holds it's own React component</li>
+          </ul>
+          <p>Enjoy looking around!</p>
+        </div>
         {windows.map((window: WindowProps, index: number) => {
           return (
             <Window

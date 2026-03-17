@@ -2,6 +2,7 @@
   "name": "react-windows",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/portfolio/react-windows",
   "engines": {
     "node": ">=18 <21"
   },
